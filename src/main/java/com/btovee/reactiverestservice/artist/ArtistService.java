@@ -28,7 +28,6 @@ public class ArtistService {
     private final VenueClient venueClient;
 
     public Mono<ArtistDto> getArtist(String id) {
-
         return Mono.zip(artistClient.getArtists(), eventsClient.getEvents(), venueClient.getVenues())
                 .map((r) -> {
                     ArtistClientDto[] artistClientDtos = r.getT1();
@@ -44,19 +43,23 @@ public class ArtistService {
                         EventDto[] eventDtos = Arrays.stream(eventClientDtos)
                                 .filter(eventClientDto -> Arrays.stream(eventClientDto.getArtists()).anyMatch(idDto -> id.equals(idDto.getId())))
                                 .map(eventClientDto -> {
-                                    VenueClientDto currentVenue = venueClientDtosById.get(eventClientDto.getVenue().getId());
-                                    VenueDto venueDto = VenueDto.builder()
-                                            .city(currentVenue.getCity())
-                                            .name(currentVenue.getName())
-                                            .url(currentVenue.getUrl())
-                                            .build();
+                                    VenueDto.VenueDtoBuilder venueDtoBuilder = VenueDto.builder();
+
+                                    if(venueClientDtosById.containsKey(eventClientDto.getVenue().getId())) {
+                                        VenueClientDto currentVenue = venueClientDtosById.get(eventClientDto.getVenue().getId());
+                                        venueDtoBuilder
+                                                .city(currentVenue.getCity())
+                                                .name(currentVenue.getName())
+                                                .url(currentVenue.getUrl());
+                                    }
+
                                     return EventDto.builder()
                                             .dateStatus(eventClientDto.getDateStatus())
                                             .startDate(eventClientDto.getStartDate())
                                             .timeZone(eventClientDto.getTimeZone())
                                             .title(eventClientDto.getTitle())
                                             .hiddenFromSearch(eventClientDto.getHiddenFromSearch())
-                                            .venue(venueDto)
+                                            .venue(venueDtoBuilder.build())
                                             .build();
                                 }).toArray(EventDto[]::new);
 

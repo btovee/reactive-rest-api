@@ -8,13 +8,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class ClientRestConfig {
 
-
-    // TODO: remove rest template
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
     @Bean
     public WebClient webClient() { return WebClient.builder().build(); }
 
