@@ -7,6 +7,7 @@ import com.btovee.reactiverestservice.event.dto.EventWithVenueDto;
 import com.btovee.reactiverestservice.venue.dto.VenueClientDto;
 import com.btovee.reactiverestservice.venue.dto.VenueWithEventDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class VenueService {
 
     private final EventsClient eventsClient;
@@ -24,7 +26,7 @@ public class VenueService {
 
         return Mono.zip(eventsClient.getEvents(), venueClient.getVenues())
                 .map((r) -> {
-
+                    log.info("Building Data for Venue with ID {}", venueId);
                     EventClientDto[] eventClientDtos = r.getT1();
                     VenueClientDto[] venueClientDtos = r.getT2();
 
@@ -42,6 +44,7 @@ public class VenueService {
                                         .hiddenFromSearch(eventClientDto.getHiddenFromSearch())
                                         .build()).toArray(EventWithVenueDto[]::new);
 
+                        log.info("Returning Data for Venue with ID {}", venueId);
                         return VenueWithEventDto.builder()
                                 .name(venueClientDto.getName())
                                 .city(venueClientDto.getCity())
@@ -49,6 +52,7 @@ public class VenueService {
                                 .events(eventDtos)
                                 .build();
                     }
+                    log.info("No Data found for Venue with ID {}", venueId);
                     return VenueWithEventDto.builder().build();
                 });
     }

@@ -19,6 +19,7 @@ public class ArtistClient {
     private final WebClient webClient;
 
     public Mono<ArtistClientDto[]> getArtists() {
+        log.info("Retrieving Artists Data");
         return webClient
                 .get()
                 .uri(artistDataEndpoint)

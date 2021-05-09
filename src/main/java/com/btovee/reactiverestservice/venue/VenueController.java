@@ -6,10 +6,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import static com.btovee.reactiverestservice.config.swagger.SwaggerTags.ARTIST;
@@ -26,9 +24,9 @@ public class VenueController {
     @GetMapping("{id}")
     @ApiOperation(value = "Get venue information for a specific venueId", tags = ARTIST)
     @ApiResponses({
-            // TODO: switch to HttpStatus.OK
             @ApiResponse(code = 200, message = "Retrieved venue information", response = VenueWithEventDto.class)
     })
+    @ResponseStatus(HttpStatus.OK)
     public Mono<VenueWithEventDto> getVenue(@PathVariable String id) {
         return venueService.getVenue(id);
     }

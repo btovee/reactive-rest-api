@@ -30,6 +30,7 @@ public class ArtistService {
     public Mono<ArtistDto> getArtist(String id) {
         return Mono.zip(artistClient.getArtists(), eventsClient.getEvents(), venueClient.getVenues())
                 .map((r) -> {
+                    log.info("Building Data for Artist with ID {}", id);
                     ArtistClientDto[] artistClientDtos = r.getT1();
                     Optional<ArtistClientDto> artistOptional = Arrays.stream(artistClientDtos).filter((artistClientDto -> id.equals(artistClientDto.id))).findFirst();
                     if (artistOptional.isPresent()) {
@@ -63,7 +64,7 @@ public class ArtistService {
                                             .build();
                                 }).toArray(EventDto[]::new);
 
-
+                        log.info("Returning Data found for Artist with ID {}", id);
                         return ArtistDto.builder()
                                 .name(artistClientDto.getName())
                                 .imgSrc(artistClientDto.getImgSrc())
@@ -72,6 +73,7 @@ public class ArtistService {
                                 .eventDto(eventDtos)
                                 .build();
                     }
+                    log.info("No Data found for Artist with ID {}", id);
                     return ArtistDto.builder().build();
                 });
 
